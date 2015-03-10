@@ -1,36 +1,20 @@
 'use strict';
-
-/**
- * @ngdoc overview
- * @name twentyfourtyeightApp
- * @description
- * # twentyfourtyeightApp
- *
- * Main module of the application.
- */
-angular
-  .module('twentyfourtyeightApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngResource',
-    'ngRoute',
-    'ngSanitize',
-    'ngTouch'
-  ])
-  .controller('GameController', function(GameManager){
-    this.game = GameManager;
-  })
-  .config(function ($routeProvider) {
-    $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
-      })
-      .when('/about', {
-        templateUrl: 'views/about.html',
-        controller: 'AboutCtrl'
-      })
-      .otherwise({
-        redirectTo: '/'
-      });
-  });
+angular.module('twentyfourtyeightApp', ['Game', 'Grid', 'Keyboard', 'ngAnimate',
+  'ngCookies'
+]).config(function(GridServiceProvider) {
+  GridServiceProvider.setSize(4);
+}).controller('GameController', function(GameManager, KeyboardService) {
+  this.game = GameManager;
+  this.newGame = function() {
+    KeyboardService.init();
+    this.game.newGame();
+    this.startGame();
+  };
+  this.startGame = function() {
+    var self = this;
+    KeyboardService.on(function(key) {
+      self.game.move(key);
+    });
+  };
+  this.newGame();
+});
